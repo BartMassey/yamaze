@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use rand::{self, seq::SliceRandom, Rng};
 
-type Coord = (usize, usize);
+type Coord = (isize, isize);
 
 #[derive(Debug, Clone)]
 pub struct Cell {
@@ -27,9 +27,9 @@ impl Maze {
         (0, -1),   // west
     ];
 
-    pub fn new<F>(start: (usize, usize), mut clipped: F) -> Self
+    pub fn new<F>(start: Coord, mut clipped: F) -> Self
     where
-        F: FnMut((isize, isize)) -> bool
+        F: FnMut(Coord) -> bool
     {
         let mut rng = rand::thread_rng();
         let mut cells: HashMap<Coord, Cell> = HashMap::new();
@@ -44,11 +44,8 @@ impl Maze {
             neighbors.clear();
             for &d in &dirns {
                 let (dr, dc) = Maze::DIRNS[d];
-                let (nr, nc) = (r as isize + dr, c as isize + dc);
-                if clipped((nr, nc)) {
-                    continue;
-                }
-                if cells.contains_key(&(nr as usize, nc as usize)) {
+                let (nr, nc) = (r + dr, c + dc);
+                if clipped((nr, nc)) || cells.contains_key(&(nr, nc)) {
                     continue;
                 }
                 neighbors.push(d);
@@ -61,8 +58,8 @@ impl Maze {
             cells.get_mut(&(r, c)).unwrap().walls[neighbor] = false;
             let (dr, dc) = Maze::DIRNS[neighbor];
             let neighbor_coord = (
-                (r as isize + dr) as usize,
-                (c as isize + dc) as usize,
+                (r + dr),
+                (c + dc),
             );
             let mut cell = Cell::new(neighbor_coord);
             cell.walls[(neighbor + 2) % 4] = false;
@@ -77,6 +74,17 @@ impl Maze {
             (0, 0),
             |(r, c)| r < 0 || c < 0 || r >= rows as isize || c >= cols as isize,
         )
+    }
+
+    pub fn bbox(&self) -> Option<(Coord, Coord)> {
+        if self.0.is_empty() {
+            return None;
+        }
+        let r_min = self.0.keys().map(|&(r, _)| r).min().unwrap();
+        let c_min = self.0.keys().map(|&(_, c)| c).min().unwrap();
+        let r_max = self.0.keys().map(|&(r, _)| r).max().unwrap();
+        let c_max = self.0.keys().map(|&(_, c)| c).max().unwrap();
+        Some(((r_min, c_min), (r_max - r_min + 1, c_max - c_min + 1)))
     }
 }
 

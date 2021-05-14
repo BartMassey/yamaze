@@ -27,9 +27,12 @@ impl Maze {
         (0, -1),   // west
     ];
 
-    pub fn new(rows: usize, cols: usize) -> Self {
+    pub fn new<F>(mut clipped: F) -> Self
+    where
+        F: FnMut((isize, isize)) -> bool
+    {
         let mut rng = rand::thread_rng();
-        let mut cells: HashMap<Coord, Cell> = HashMap::with_capacity(rows * cols);
+        let mut cells: HashMap<Coord, Cell> = HashMap::new();
         cells.insert((0, 0), Cell::new((0, 0)));
         let mut open = vec![(0, 0)];
         let mut dirns = [0, 1, 2, 3];
@@ -42,7 +45,7 @@ impl Maze {
             for &d in &dirns {
                 let (dr, dc) = Maze::DIRNS[d];
                 let (nr, nc) = (r as isize + dr, c as isize + dc);
-                if nr < 0 || nc < 0 || nr >= rows as isize || nc >= cols as isize {
+                if clipped((nr, nc)) {
                     continue;
                 }
                 if cells.contains_key(&(nr as usize, nc as usize)) {
@@ -67,6 +70,10 @@ impl Maze {
             open.push(neighbor_coord);
         }
         Maze(cells)
+    }
+
+    pub fn new_rect(rows: usize, cols: usize) -> Self {
+        Self::new(|(r, c)| r < 0 || c < 0 || r >= rows as isize || c >= cols as isize)
     }
 }
 

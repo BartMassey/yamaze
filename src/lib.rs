@@ -69,3 +69,44 @@ impl Maze {
         Maze(cells)
     }
 }
+
+#[test]
+fn test_complete() {
+    let maze = Maze::new(20, 20);
+    for r in 0..20 {
+        for c in 0..20 {
+            assert!(maze.0.contains_key(&(r, c)));
+        }
+    }
+}
+
+#[test]
+fn test_walls_consistent() {
+    let maze = Maze::new(20, 20);
+    for r in 0..20 {
+        assert!(maze.0[&(r, 0)].walls[3]);
+        assert!(maze.0[&(r, 19)].walls[1]);
+    }
+    for c in 0..20 {
+        assert!(maze.0[&(0, c)].walls[0]);
+        assert!(maze.0[&(19, c)].walls[2]);
+    }
+    for r in 0..20 {
+        for c in 0..19 {
+            let cell_1 = &maze.0[&(r, c)];
+            let cell_2 = &maze.0[&(r, c + 1)];
+            let wall_1 = cell_1.walls[1];
+            let wall_2 = cell_2.walls[3];
+            assert_eq!(wall_1, wall_2);
+        }
+    }
+    for c in 0..20 {
+        for r in 0..19 {
+            let cell_1 = &maze.0[&(r, c)];
+            let cell_2 = &maze.0[&(r + 1, c)];
+            let wall_1 = cell_1.walls[2];
+            let wall_2 = cell_2.walls[0];
+            assert_eq!(wall_1, wall_2);
+        }
+    }
+}

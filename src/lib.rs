@@ -21,10 +21,10 @@ pub struct Maze(pub HashMap<Coord, Cell>);
 
 impl Maze {
     pub const DIRNS: [(isize, isize); 4] = [
-        (0, -1),   // north
-        (1, 0),   // east
-        (0, 1),   // south
-        (-1, 0),   // west
+        (-1, 0),   // north
+        (0, 1),   // east
+        (1, 0),   // south
+        (0, -1),   // west
     ];
 
     pub fn new(rows: usize, cols: usize) -> Self {

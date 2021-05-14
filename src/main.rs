@@ -11,11 +11,11 @@ fn draw_cell(render: &mut image::GrayImage, cell: &yamaze::Cell) {
         if !cell.walls[d] {
             continue;
         }
-        let (start, end) = match Maze::DIRNS[d] {
-            (0, -1) => ((rs, cs), (rs, ce)),
-            (1, 0) => ((rs, ce), (re, ce)),
-            (0, 1) => ((re, cs), (re, ce)),
-            (-1, 0) => ((rs, cs), (re, cs)),
+        let (start, end) = match d {
+            0 => ((rs, cs), (rs, ce)),
+            1 => ((rs, ce), (re, ce)),
+            2 => ((re, cs), (re, ce)),
+            3 => ((rs, cs), (re, cs)),
             d => panic!("unknown direction {:?}", d),
         };
         drawing::draw_line_segment_mut(render, start, end, image::Luma([255]));

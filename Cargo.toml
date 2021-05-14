@@ -1,0 +1,10 @@
+[package]
+name = "yamaze"
+version = "0.1.0"
+authors = ["Bart Massey <bart.massey@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+image = "0.23.14"
+imageproc = "0.22.0"
+rand = "0.8.3"

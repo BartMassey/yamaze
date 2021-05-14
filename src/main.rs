@@ -24,7 +24,14 @@ fn draw_cell(render: &mut image::GrayImage, cell: &yamaze::Cell) {
 
 pub fn main() {
     let dim: usize = std::env::args().nth(1).unwrap().parse().unwrap();
-    let maze = yamaze::Maze::new_rect(dim, dim);
+    let outer = (dim * dim) as isize;
+    let inner = outer / 4;
+    let clipped = |(r, c)| {
+        let (r_off, c_off) = (r - dim as isize, c - dim as isize);
+        let radius = r_off * r_off + c_off * c_off;
+        radius < inner || radius > outer
+    };
+    let maze = yamaze::Maze::new((1, dim), clipped);
     let mut render = image::GrayImage::new(10 * dim as u32, 10 * dim as u32);
     for cell in maze.0.values() {
         draw_cell(&mut render, cell);

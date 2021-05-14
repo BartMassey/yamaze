@@ -27,14 +27,14 @@ impl Maze {
         (0, -1),   // west
     ];
 
-    pub fn new<F>(mut clipped: F) -> Self
+    pub fn new<F>(start: (usize, usize), mut clipped: F) -> Self
     where
         F: FnMut((isize, isize)) -> bool
     {
         let mut rng = rand::thread_rng();
         let mut cells: HashMap<Coord, Cell> = HashMap::new();
-        cells.insert((0, 0), Cell::new((0, 0)));
-        let mut open = vec![(0, 0)];
+        cells.insert(start, Cell::new(start));
+        let mut open = vec![start];
         let mut dirns = [0, 1, 2, 3];
         let mut neighbors = Vec::with_capacity(4);
         while !open.is_empty() {
@@ -73,7 +73,10 @@ impl Maze {
     }
 
     pub fn new_rect(rows: usize, cols: usize) -> Self {
-        Self::new(|(r, c)| r < 0 || c < 0 || r >= rows as isize || c >= cols as isize)
+        Self::new(
+            (0, 0),
+            |(r, c)| r < 0 || c < 0 || r >= rows as isize || c >= cols as isize,
+        )
     }
 }
 
